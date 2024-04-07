@@ -39,14 +39,14 @@ class Ord:
             raise ServiceRefusedError(text)
 
 
-async def height(self):
-    '''Query the daemon for its current height.'''
-    self._height = await self._send_data(self.url + "/height")
-    return self._height
+    async def height(self):
+        '''Query the daemon for its current height.'''
+        self._height = await self._send_data(self.url + "/height")
+        return self._height
 
 
-def cached_height(self):
-    '''Return the cached daemon height.
+    def cached_height(self):
+        '''Return the cached daemon height.
 
-    If the daemon has not been queried yet this returns None.'''
-    return self._height
+        If the daemon has not been queried yet this returns None.'''
+        return self._height
