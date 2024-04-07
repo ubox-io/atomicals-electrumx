@@ -35,15 +35,10 @@ class Ord:
         url = self.url + "/blockheight"
         print(url)
         response = requests.get(url)
-        # 如果响应状态码为 200 OK，则处理响应内容
         if response.status_code == 200:
-            print("Ord Request was successful!")
-            print("Ord Response content:")
-            print(response.text)
             self._height = int(response.text)
         else:
             print(f"Ord Request failed with status code: {response.status_code}")
-            # 可以根据具体的状态码做不同的处理
         return self._height
 
     def cached_height(self):
