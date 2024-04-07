@@ -29,21 +29,18 @@ class Ord:
         self.url = url
         self._height = None
 
-    async def _send_data(self, url):
-        async with requests.get(url) as resp:
-            kind = resp.headers.get('Content-Type', None)
-            if kind == 'application/json':
-                return await resp.json(loads=json_deserialize)
-            text = await resp.text()
-            text = text.strip() or resp.reason
-            raise ServiceRefusedError(text)
-
-
     async def height(self):
-        '''Query the daemon for its current height.'''
-        self._height = await self._send_data(self.url + "/height")
+        response = requests.get(self.url + "/height")
+        # 如果响应状态码为 200 OK，则处理响应内容
+        if response.status_code == 200:
+            print("Request was successful!")
+            print("Response content:")
+            print(response.text)
+            self._height = int(response.text)
+        else:
+            print(f"Request failed with status code: {response.status_code}")
+            # 可以根据具体的状态码做不同的处理
         return self._height
-
 
     def cached_height(self):
         '''Return the cached daemon height.
