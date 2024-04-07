@@ -33,7 +33,6 @@ class Ord:
 
     async def height(self):
         url = self.url + "/blockheight"
-        print(url)
         response = requests.get(url)
         if response.status_code == 200:
             self._height = int(response.text)

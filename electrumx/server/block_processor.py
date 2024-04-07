@@ -199,7 +199,7 @@ class Prefetcher:
 
                 if ord.enable and first > ord_height:
                     # wait ord sync first
-                    print("Waiting ord sync latest block")
+                    print("Waiting ord sync latest block ", first)
                     return False
 
                 hex_hashes = await daemon.block_hex_hashes(first, count)
