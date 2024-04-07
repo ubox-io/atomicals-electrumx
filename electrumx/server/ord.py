@@ -30,15 +30,17 @@ class Ord:
         self._height = None
 
     async def height(self):
-        response = requests.get(self.url + "/height")
+        url = self.url + "/height"
+        print(url)
+        response = requests.get(url)
         # 如果响应状态码为 200 OK，则处理响应内容
         if response.status_code == 200:
-            print("Request was successful!")
-            print("Response content:")
+            print("Ord Request was successful!")
+            print("Ord Response content:")
             print(response.text)
             self._height = int(response.text)
         else:
-            print(f"Request failed with status code: {response.status_code}")
+            print(f"Ord Request failed with status code: {response.status_code}")
             # 可以根据具体的状态码做不同的处理
         return self._height
 
