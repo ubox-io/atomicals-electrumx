@@ -182,7 +182,7 @@ class Prefetcher:
         daemon_height = await daemon.height()
         ord = self.ord
         ord_height = 0
-        if ord:
+        if ord and ord.enable:
             ord_height = await ord.height()
 
         async with self.semaphore:
@@ -197,8 +197,9 @@ class Prefetcher:
                     self.caught_up = True
                     return False
 
-                if ord_height and first > ord_height:
+                if ord.enable and first > ord_height:
                     # wait ord sync first
+                    print("Waiting ord sync latest block")
                     return False
 
                 hex_hashes = await daemon.block_hex_hashes(first, count)

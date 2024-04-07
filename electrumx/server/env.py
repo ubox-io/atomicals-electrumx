@@ -46,6 +46,7 @@ class Env(EnvBase):
         self.db_dir = self.required('DB_DIRECTORY')
         self.daemon_url = self.required('DAEMON_URL')
         self.ord_url = self.required('ORD_URL')
+        self.ord_enable = self.boolean('ORD_ENABLE',False)
         if coin is not None:
             assert issubclass(coin, Coin)
             self.coin = coin

@@ -24,9 +24,11 @@ class Ord:
     def __init__(
             self,
             url,
+            enable,
     ):
         self.logger = class_logger(__name__, self.__class__.__name__)
         self.url = url
+        self.enable= enable
         self._height = None
 
     async def height(self):

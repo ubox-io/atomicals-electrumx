@@ -100,7 +100,7 @@ class Controller(ServerBase):
 
         async with Daemon(env.coin, env.daemon_url) as daemon:
             db = DB(env)
-            ord = Ord(env.ord_url)
+            ord = Ord(env.ord_url,env.ord_enable)
             bp = BlockProcessor(env, db, daemon, ord, notifications)
 
             # Set notifications up to implement the MemPoolAPI
