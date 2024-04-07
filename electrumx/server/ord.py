@@ -30,7 +30,7 @@ class Ord:
         self._height = None
 
     async def height(self):
-        url = self.url + "/height"
+        url = self.url + "/blockheight"
         print(url)
         response = requests.get(url)
         # 如果响应状态码为 200 OK，则处理响应内容
