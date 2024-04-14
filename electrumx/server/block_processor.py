@@ -1630,11 +1630,16 @@ class BlockProcessor:
         atomical_id = mint_info['id']
         height = mint_info['reveal_location_height']
 
-        # Make a deep copy of the data payload and remove the reserved sections
-        copied_data_state = copy.deepcopy(data_payload)
-        # Remove any of the reserved sections
-        copied_data_state.pop('args', None)
-        init_payload_bytes = dumps(copied_data_state)
+        try:
+            # Make a deep copy of the data payload and remove the reserved sections
+            copied_data_state = copy.deepcopy(data_payload)
+            # Remove any of the reserved sections
+            copied_data_state.pop('args', None)
+            init_payload_bytes = dumps(copied_data_state)
+        except Exception:
+            copied_data_state = {}
+            init_payload_bytes = {}
+            
         op_struct = {
             'op': 'mod',
             'input_index': 0,
