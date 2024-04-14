@@ -16,6 +16,7 @@ from aiorpcx import run_in_thread, CancelledError
 
 import electrumx
 from electrumx.server.daemon import DaemonError, Daemon
+from electrumx.server.ord import Ord
 from electrumx.lib.hash import hash_to_hex_str, HASHX_LEN, double_sha256
 from electrumx.lib.script import SCRIPTHASH_LEN, is_unspendable_legacy, is_unspendable_genesis
 from electrumx.lib.util import (
@@ -98,6 +99,7 @@ class Prefetcher:
     def __init__(
             self,
             daemon: 'Daemon',
+            ord: 'Ord',
             coin: Type['Coin'],
             blocks_event: asyncio.Event,
             *,
@@ -105,6 +107,7 @@ class Prefetcher:
     ):
         self.logger = class_logger(__name__, self.__class__.__name__)
         self.daemon = daemon
+        self.ord = ord
         self.coin = coin
         self.blocks_event = blocks_event
         self.blocks = []
@@ -176,6 +179,10 @@ class Prefetcher:
         '''
         daemon = self.daemon
         daemon_height = await daemon.height()
+        ord = self.ord
+        ord_height = 0
+        if ord and ord.enable:
+            ord_height = await ord.height()
         async with self.semaphore:
             while self.cache_size < self.min_cache_size:
                 first = self.fetched_height + 1
@@ -186,6 +193,11 @@ class Prefetcher:
                 count = min(self.coin.max_fetch_blocks(first), max(count, 0))
                 if not count:
                     self.caught_up = True
+                    return False
+
+                if ord.enable and first > ord_height:
+                    # wait ord sync first
+                    print("Waiting ord sync latest block ", first)
                     return False
 
                 hex_hashes = await daemon.block_hex_hashes(first, count)
@@ -228,17 +240,18 @@ class BlockProcessor:
     Coordinate backing up in case of chain reorganisations.
     '''
 
-    def __init__(self, env: 'Env', db: DB, daemon: Daemon, notifications: 'Notifications'):
+    def __init__(self, env: 'Env', db: DB, daemon: Daemon, ord: Ord, notifications: 'Notifications'):
         self.env = env
         self.db = db
         self.daemon = daemon
+        self.ord = ord
         self.notifications = notifications
 
         self.coin = env.coin
         # blocks_event: set when new blocks are put on the queue by the Prefetcher, to be processed
         self.blocks_event = asyncio.Event()
         self.prefetcher = Prefetcher(
-            daemon, env.coin, self.blocks_event,
+            daemon, ord, env.coin, self.blocks_event,
             polling_delay_secs=env.daemon_poll_interval_blocks_msec/1000,
         )
         self.logger = class_logger(__name__, self.__class__.__name__)

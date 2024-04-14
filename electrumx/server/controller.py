@@ -15,6 +15,7 @@ from electrumx.lib.util import version_string, OldTaskGroup
 from electrumx.server.db import DB
 from electrumx.server.mempool import MemPool, MemPoolAPI
 from electrumx.server.session import SessionManager
+from electrumx.server.ord import Ord
 
 
 class Notifications:
@@ -99,7 +100,8 @@ class Controller(ServerBase):
 
         async with Daemon(env.coin, env.daemon_url) as daemon:
             db = DB(env)
-            bp = BlockProcessor(env, db, daemon, notifications)
+            ord = Ord(env.ord_url, env.ord_enable)
+            bp = BlockProcessor(env, db, daemon, ord, notifications)
 
             # Set notifications up to implement the MemPoolAPI
             def get_db_height():
