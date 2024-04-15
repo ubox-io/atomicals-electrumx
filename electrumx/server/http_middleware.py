@@ -98,7 +98,7 @@ def success_resp(data) -> web.Response:
 def request_middleware(self) -> web_middlewares:
     async def factory(app: web.Application, handler):
         async def middleware_handler(request):
-            self.logger.info('Request {} comming'.format(request))
+            self.logger.info('Request {} comming enable_rate_limit={}'.format(request,self.env.enable_rate_limit))
             if not self.env.enable_rate_limit:
                 response = await handler(request)
                 if isinstance(response, web.Response):
